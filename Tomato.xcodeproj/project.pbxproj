@@ -12,6 +12,7 @@
 		5AE950C9337AFD774F0333D7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F33966FA76CA0F093EBAC875 /* Assets.xcassets */; };
 		772B6911789D9B590F4419C5 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E733954775EDA2A567E6927D /* SettingsView.swift */; };
 		8B9C9F8D31477BAA1F3A77FC /* PomodoroTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EB18728FA6FE904DAEB2E80 /* PomodoroTimer.swift */; };
+		AE82C3065D203A76796595C0 /* SplatTomatoIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22C44B886CE67543149169AE /* SplatTomatoIcon.swift */; };
 		B8B0EC0162D8229216BA7965 /* MenuContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF3353F53DE8D1F75A727E27 /* MenuContentView.swift */; };
 		D601E8965113FB5CFBB38D6C /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0687E8F265FADB6C5F8696 /* AppSettings.swift */; };
 		FDE872AEE8D34F1BCCAFF3C2 /* StatsChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 741B7CD5E60D59414BBEC2DB /* StatsChartView.swift */; };
@@ -19,6 +20,7 @@
 
 /* Begin PBXFileReference section */
 		0C0687E8F265FADB6C5F8696 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		22C44B886CE67543149169AE /* SplatTomatoIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplatTomatoIcon.swift; sourceTree = "<group>"; };
 		4EAB18A6709C574834FDA1E1 /* TomatoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TomatoApp.swift; sourceTree = "<group>"; };
 		4EB18728FA6FE904DAEB2E80 /* PomodoroTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PomodoroTimer.swift; sourceTree = "<group>"; };
 		52CA1C1A48322FB614E3C6E7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -82,6 +84,7 @@
 			children = (
 				BF3353F53DE8D1F75A727E27 /* MenuContentView.swift */,
 				E733954775EDA2A567E6927D /* SettingsView.swift */,
+				22C44B886CE67543149169AE /* SplatTomatoIcon.swift */,
 				741B7CD5E60D59414BBEC2DB /* StatsChartView.swift */,
 			);
 			path = Views;
@@ -159,6 +162,7 @@
 				8B9C9F8D31477BAA1F3A77FC /* PomodoroTimer.swift in Sources */,
 				42D9BA55D2BEC595152C7397 /* SessionStore.swift in Sources */,
 				772B6911789D9B590F4419C5 /* SettingsView.swift in Sources */,
+				AE82C3065D203A76796595C0 /* SplatTomatoIcon.swift in Sources */,
 				FDE872AEE8D34F1BCCAFF3C2 /* StatsChartView.swift in Sources */,
 				050BFD171FEC2A377D5CA98A /* TomatoApp.swift in Sources */,
 			);

@@ -101,13 +101,34 @@ struct MenuContentView: View {
                 }
             }
 
-            Button("Quit Tomato") {
-                NSApplication.shared.terminate(nil)
+            QuitButton()
+                .padding(.top, 4)
+        }
+    }
+}
+
+private struct QuitButton: View {
+    @State private var isHovered = false
+
+    var body: some View {
+        Button(action: { NSApplication.shared.terminate(nil) }) {
+            HStack(spacing: 4) {
+                if isHovered {
+                    SplatTomatoIcon()
+                        .stroke(style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
+                        .foregroundStyle(.red)
+                        .frame(width: 14, height: 14)
+                }
+                Text("Quit Tomato")
             }
             .font(.system(size: 11))
-            .foregroundStyle(.secondary)
-            .buttonStyle(.plain)
-            .padding(.top, 4)
+            .foregroundStyle(isHovered ? .red : .secondary)
+        }
+        .buttonStyle(.plain)
+        .onHover { hovering in
+            withAnimation(.easeInOut(duration: 0.15)) {
+                isHovered = hovering
+            }
         }
     }
 }
