@@ -1,14 +1,20 @@
 import Foundation
 
+enum BreakOutcome: String, Codable, Sendable {
+    case tracked  // user clicked the orange dot
+    case missed   // break timer expired without acknowledgment
+    case paused   // user paused the timer during a break
+}
+
 struct BreakRecord: Codable, Identifiable {
     let id: UUID
     let date: Date
-    let tracked: Bool
+    let outcome: BreakOutcome
 
-    init(date: Date, tracked: Bool) {
+    init(date: Date, outcome: BreakOutcome) {
         self.id = UUID()
         self.date = date
-        self.tracked = tracked
+        self.outcome = outcome
     }
 }
 
@@ -18,6 +24,7 @@ struct DayStat: Identifiable {
     let date: Date
     let tracked: Int
     let missed: Int
+    let paused: Int
 }
 
 final class SessionStore: ObservableObject {
@@ -37,8 +44,8 @@ final class SessionStore: ObservableObject {
         loadRecords()
     }
 
-    func recordBreak(tracked: Bool, date: Date) {
-        let record = BreakRecord(date: date, tracked: tracked)
+    func recordBreak(outcome: BreakOutcome, date: Date) {
+        let record = BreakRecord(date: date, outcome: outcome)
         records.append(record)
         saveRecords()
     }
@@ -49,9 +56,12 @@ final class SessionStore: ObservableObject {
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: Date())
         let todayRecords = records.filter { calendar.isDate($0.date, inSameDayAs: today) }
-        let tracked = todayRecords.filter(\.tracked).count
-        let missed = todayRecords.filter { !$0.tracked }.count
-        return [DayStat(label: "Today", date: today, tracked: tracked, missed: missed)]
+        return [DayStat(
+            label: "Today", date: today,
+            tracked: todayRecords.filter { $0.outcome == .tracked }.count,
+            missed: todayRecords.filter { $0.outcome == .missed }.count,
+            paused: todayRecords.filter { $0.outcome == .paused }.count
+        )]
     }
 
     func weekStats() -> [DayStat] {
@@ -60,17 +70,19 @@ final class SessionStore: ObservableObject {
 
         return (0..<7).reversed().map { daysAgo in
             guard let date = calendar.date(byAdding: .day, value: -daysAgo, to: today) else {
-                return DayStat(label: "", date: today, tracked: 0, missed: 0)
+                return DayStat(label: "", date: today, tracked: 0, missed: 0, paused: 0)
             }
             let dayRecords = records.filter { calendar.isDate($0.date, inSameDayAs: date) }
-            let tracked = dayRecords.filter(\.tracked).count
-            let missed = dayRecords.filter { !$0.tracked }.count
 
             let formatter = DateFormatter()
             formatter.dateFormat = "EEE"
-            let label = formatter.string(from: date)
 
-            return DayStat(label: label, date: date, tracked: tracked, missed: missed)
+            return DayStat(
+                label: formatter.string(from: date), date: date,
+                tracked: dayRecords.filter { $0.outcome == .tracked }.count,
+                missed: dayRecords.filter { $0.outcome == .missed }.count,
+                paused: dayRecords.filter { $0.outcome == .paused }.count
+            )
         }
     }
 
@@ -78,7 +90,6 @@ final class SessionStore: ObservableObject {
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: Date())
 
-        // Group into 4 weeks
         return (0..<4).reversed().map { weeksAgo in
             let weekEnd = calendar.date(byAdding: .day, value: -(weeksAgo * 7), to: today)!
             let weekStart = calendar.date(byAdding: .day, value: -6, to: weekEnd)!
@@ -88,14 +99,12 @@ final class SessionStore: ObservableObject {
                 return recordDate >= weekStart && recordDate <= weekEnd
             }
 
-            let tracked = weekRecords.filter(\.tracked).count
-            let missed = weekRecords.filter { !$0.tracked }.count
-
-            let formatter = DateFormatter()
-            formatter.dateFormat = "MMM d"
-            let label = "W\(4 - weeksAgo)"
-
-            return DayStat(label: label, date: weekStart, tracked: tracked, missed: missed)
+            return DayStat(
+                label: "W\(4 - weeksAgo)", date: weekStart,
+                tracked: weekRecords.filter { $0.outcome == .tracked }.count,
+                missed: weekRecords.filter { $0.outcome == .missed }.count,
+                paused: weekRecords.filter { $0.outcome == .paused }.count
+            )
         }
     }
 

@@ -7,7 +7,6 @@ final class AppSettings: ObservableObject {
         static let shortBreakMinutes = "shortBreakMinutes"
         static let longBreakMinutes = "longBreakMinutes"
         static let sessionsBeforeLongBreak = "sessionsBeforeLongBreak"
-        static let autoStartWork = "autoStartWork"
     }
 
     @Published var workMinutes: Int {
@@ -24,10 +23,6 @@ final class AppSettings: ObservableObject {
 
     @Published var sessionsBeforeLongBreak: Int {
         didSet { UserDefaults.standard.set(sessionsBeforeLongBreak, forKey: Keys.sessionsBeforeLongBreak) }
-    }
-
-    @Published var autoStartWork: Bool {
-        didSet { UserDefaults.standard.set(autoStartWork, forKey: Keys.autoStartWork) }
     }
 
     var workSeconds: Int { workMinutes * 60 }
@@ -49,14 +44,10 @@ final class AppSettings: ObservableObject {
         if defaults.object(forKey: Keys.sessionsBeforeLongBreak) == nil {
             defaults.set(4, forKey: Keys.sessionsBeforeLongBreak)
         }
-        if defaults.object(forKey: Keys.autoStartWork) == nil {
-            defaults.set(true, forKey: Keys.autoStartWork)
-        }
 
         self.workMinutes = defaults.integer(forKey: Keys.workMinutes)
         self.shortBreakMinutes = defaults.integer(forKey: Keys.shortBreakMinutes)
         self.longBreakMinutes = defaults.integer(forKey: Keys.longBreakMinutes)
         self.sessionsBeforeLongBreak = defaults.integer(forKey: Keys.sessionsBeforeLongBreak)
-        self.autoStartWork = defaults.bool(forKey: Keys.autoStartWork)
     }
 }

@@ -5,10 +5,6 @@ struct StatsChartView: View {
     let title: String
     let stats: [DayStat]
 
-    private var maxValue: Int {
-        max(stats.map { $0.tracked + $0.missed }.max() ?? 1, 1)
-    }
-
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
@@ -19,7 +15,7 @@ struct StatsChartView: View {
                 legendView
             }
 
-            if stats.isEmpty || stats.allSatisfy({ $0.tracked == 0 && $0.missed == 0 }) {
+            if stats.isEmpty || stats.allSatisfy({ $0.tracked == 0 && $0.missed == 0 && $0.paused == 0 }) {
                 emptyState
             } else {
                 chartView
@@ -36,6 +32,10 @@ struct StatsChartView: View {
             HStack(spacing: 3) {
                 Circle().fill(.red.opacity(0.7)).frame(width: 6, height: 6)
                 Text("Missed").font(.system(size: 9)).foregroundStyle(.tertiary)
+            }
+            HStack(spacing: 3) {
+                Circle().fill(.gray).frame(width: 6, height: 6)
+                Text("Paused").font(.system(size: 9)).foregroundStyle(.tertiary)
             }
         }
     }
@@ -66,6 +66,13 @@ struct StatsChartView: View {
                     y: .value("Count", stat.missed)
                 )
                 .foregroundStyle(.red.opacity(0.7))
+                .cornerRadius(2)
+
+                BarMark(
+                    x: .value("Period", stat.label),
+                    y: .value("Count", stat.paused)
+                )
+                .foregroundStyle(.gray)
                 .cornerRadius(2)
             }
         }

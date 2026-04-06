@@ -30,29 +30,33 @@ struct MenuContentView: View {
                     .font(.system(size: 11, weight: .medium))
                     .foregroundStyle(.secondary)
                 Spacer()
-                if timer.state != .idle {
-                    Text("Session \(timer.completedWorkSessions + (timer.state == .working ? 1 : 0))")
-                        .font(.system(size: 10))
-                        .foregroundStyle(.tertiary)
-                }
+                Text("Session \(timer.completedWorkSessions + (timer.state == .working ? 1 : 0))")
+                    .font(.system(size: 10))
+                    .foregroundStyle(.tertiary)
             }
 
-            Text(timer.state == .idle ? "--:--" : timer.formattedTime)
+            Text(timer.formattedTime)
                 .font(.system(size: 40, weight: .light, design: .monospaced))
-                .foregroundStyle(timer.state == .onBreak ? .orange : .primary)
+                .foregroundStyle(timerColor)
 
-            if timer.state != .idle {
-                ProgressView(value: timer.progress)
-                    .tint(timer.state == .onBreak ? .orange : .accentColor)
-            }
+            ProgressView(value: timer.progress)
+                .tint(timerColor)
         }
     }
 
     private var stateLabel: String {
         switch timer.state {
-        case .idle: return "IDLE"
         case .working: return "FOCUS"
         case .onBreak: return "BREAK"
+        case .paused: return "PAUSED"
+        }
+    }
+
+    private var timerColor: Color {
+        switch timer.state {
+        case .working: return .primary
+        case .onBreak: return .orange
+        case .paused: return .gray
         }
     }
 
@@ -71,16 +75,16 @@ struct MenuContentView: View {
     private var controlsSection: some View {
         VStack(spacing: 6) {
             HStack(spacing: 8) {
-                if timer.state == .idle {
-                    Button(action: { timer.start() }) {
-                        Label("Start", systemImage: "play.fill")
+                if timer.state == .paused {
+                    Button(action: { timer.resume() }) {
+                        Label("Resume", systemImage: "play.fill")
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.regular)
                 } else {
-                    Button(action: { timer.stop() }) {
-                        Label("Stop", systemImage: "stop.fill")
+                    Button(action: { timer.pause() }) {
+                        Label("Pause", systemImage: "pause.fill")
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.bordered)

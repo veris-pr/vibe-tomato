@@ -42,9 +42,6 @@ struct SettingsView: View {
                     .labelsHidden()
                     .frame(width: 120)
                 }
-
-                Toggle("Auto-start work after break", isOn: $settings.autoStartWork)
-                    .font(.system(size: 12))
             }
         }
         .padding(16)

@@ -2,14 +2,14 @@ import Foundation
 import SwiftUI
 
 enum TimerState: String, Codable, Sendable {
-    case idle
     case working
     case onBreak
+    case paused
 }
 
 @MainActor
 final class PomodoroTimer: ObservableObject {
-    @Published var state: TimerState = .idle
+    @Published var state: TimerState = .working
     @Published var remainingSeconds: Int = 0
     @Published var completedWorkSessions: Int = 0
 
@@ -19,6 +19,9 @@ final class PomodoroTimer: ObservableObject {
     private var timer: Timer?
     private let settings: AppSettings
     private let sessionStore: SessionStore
+
+    /// Remembers what state we were in before pausing
+    private var stateBeforePause: TimerState = .working
 
     var isLongBreak: Bool {
         completedWorkSessions > 0 && completedWorkSessions % settings.sessionsBeforeLongBreak == 0
@@ -31,8 +34,12 @@ final class PomodoroTimer: ObservableObject {
     var progress: Double {
         let total: Int
         switch state {
-        case .idle:
-            return 0
+        case .paused:
+            switch stateBeforePause {
+            case .working: total = settings.workSeconds
+            case .onBreak: total = currentBreakDuration
+            case .paused: return 0
+            }
         case .working:
             total = settings.workSeconds
         case .onBreak:
@@ -50,36 +57,51 @@ final class PomodoroTimer: ObservableObject {
 
     var menuBarColor: Color {
         switch state {
-        case .idle:
-            return .gray
         case .working:
             return .primary
         case .onBreak:
             return .orange
+        case .paused:
+            return .gray
         }
     }
 
     init(settings: AppSettings, sessionStore: SessionStore) {
         self.settings = settings
         self.sessionStore = sessionStore
+        // Always-on: start working immediately
+        remainingSeconds = settings.workSeconds
+        startCountdown()
     }
 
-    func start() {
-        startWork()
-    }
-
-    func stop() {
+    func pause() {
+        guard state != .paused else { return }
+        // If pausing during a break, record it as a paused break
+        if state == .onBreak && !breakAcknowledged {
+            sessionStore.recordBreak(outcome: .paused, date: Date())
+            breakAcknowledged = true
+        }
+        stateBeforePause = state
         timer?.invalidate()
         timer = nil
-        state = .idle
-        remainingSeconds = 0
-        breakAcknowledged = false
+        state = .paused
+    }
+
+    func resume() {
+        guard state == .paused else { return }
+        // Resume into a fresh work session (break was already recorded if applicable)
+        if stateBeforePause == .onBreak {
+            startWork()
+        } else {
+            state = stateBeforePause
+            startCountdown()
+        }
     }
 
     func acknowledgeBreak() {
         guard state == .onBreak, !breakAcknowledged else { return }
         breakAcknowledged = true
-        sessionStore.recordBreak(tracked: true, date: Date())
+        sessionStore.recordBreak(outcome: .tracked, date: Date())
         endBreak()
     }
 
@@ -107,12 +129,7 @@ final class PomodoroTimer: ObservableObject {
     private func endBreak() {
         timer?.invalidate()
         timer = nil
-        if settings.autoStartWork {
-            startWork()
-        } else {
-            state = .idle
-            remainingSeconds = 0
-        }
+        startWork()
     }
 
     private func startCountdown() {
@@ -138,10 +155,10 @@ final class PomodoroTimer: ObservableObject {
                 startBreak()
             case .onBreak:
                 if !breakAcknowledged {
-                    sessionStore.recordBreak(tracked: false, date: Date())
+                    sessionStore.recordBreak(outcome: .missed, date: Date())
                 }
                 endBreak()
-            case .idle:
+            case .paused:
                 break
             }
         }
