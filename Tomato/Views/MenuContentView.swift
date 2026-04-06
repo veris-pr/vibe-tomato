@@ -10,9 +10,9 @@ struct MenuContentView: View {
         VStack(spacing: 0) {
             timerSection
             Divider().padding(.vertical, 4)
-            statsSection
-            Divider().padding(.vertical, 4)
             controlsSection
+            Divider().padding(.vertical, 4)
+            statsSection
         }
         .padding(12)
         .frame(width: 320)
@@ -71,12 +71,21 @@ struct MenuContentView: View {
 
     private var controlsSection: some View {
         VStack(spacing: 6) {
-            Button(action: { timer.acknowledgeBreak() }) {
-                Text("Break Done")
-                    .frame(maxWidth: .infinity)
+            HStack(spacing: 8) {
+                Button(action: { timer.acknowledgeBreak() }) {
+                    Text("Break Done")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.regular)
+
+                Button(action: { timer.skipBreak() }) {
+                    Text("Skip")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.regular)
             }
-            .buttonStyle(.bordered)
-            .controlSize(.regular)
             .disabled(!timer.isAwaitingBreakAcknowledgment)
             .opacity(timer.isAwaitingBreakAcknowledgment ? 1 : 0)
             .frame(height: 30)

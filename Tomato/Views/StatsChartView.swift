@@ -28,11 +28,11 @@ struct StatsChartView: View {
     }
 
     private var hasData: Bool {
-        !stats.isEmpty && stats.contains { $0.tracked > 0 || $0.missed > 0 || $0.paused > 0 }
+        !stats.isEmpty && stats.contains { $0.tracked > 0 || $0.missed > 0 || $0.skipped > 0 || $0.paused > 0 }
     }
 
     private var legendView: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 6) {
             HStack(spacing: 3) {
                 Circle().fill(.primary).frame(width: 6, height: 6)
                 Text("Tracked").font(.system(size: 9)).foregroundStyle(.tertiary)
@@ -40,6 +40,10 @@ struct StatsChartView: View {
             HStack(spacing: 3) {
                 Circle().fill(.secondary.opacity(0.5)).frame(width: 6, height: 6)
                 Text("Missed").font(.system(size: 9)).foregroundStyle(.tertiary)
+            }
+            HStack(spacing: 3) {
+                Circle().fill(Color.primary.opacity(0.25)).frame(width: 6, height: 6)
+                Text("Skipped").font(.system(size: 9)).foregroundStyle(.tertiary)
             }
             HStack(spacing: 3) {
                 Circle().fill(.quaternary).frame(width: 6, height: 6)
@@ -70,6 +74,13 @@ struct StatsChartView: View {
                     y: .value("Count", stat.missed)
                 )
                 .foregroundStyle(.secondary.opacity(0.5))
+                .cornerRadius(2)
+
+                BarMark(
+                    x: .value("Period", stat.label),
+                    y: .value("Count", stat.skipped)
+                )
+                .foregroundStyle(Color.primary.opacity(0.25))
                 .cornerRadius(2)
 
                 BarMark(

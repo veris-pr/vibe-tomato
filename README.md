@@ -14,7 +14,7 @@ Tomato sits quietly in your menu bar as a small dot:
 - **🟠 Orange dot** — Time to take a break!
 - **● Gray dot** — Timer is paused
 
-When the orange dot appears, open the menu and click `Break Done` to acknowledge your break. If the break timer expires first, it's recorded as a missed break. If you pause during a break, that is tracked as a separate paused outcome. Your tracked, missed, and paused breaks are visualized in the menu.
+When the orange dot appears, open the menu and click `Break Done` to acknowledge your break or `Skip` to dismiss it. If the break timer expires first, it's recorded as a missed break. If you pause during a break, that is tracked as a separate paused outcome. Your tracked, missed, skipped, and paused breaks are visualized in the menu.
 
 **No notifications. No pop-ups. Just a dot.**
 
@@ -23,7 +23,7 @@ When the orange dot appears, open the menu and click `Break Done` to acknowledge
 - 🎯 **Menubar-only** — No dock icon, no windows stealing focus
 - ▶️ **Always-on timer** — Starts immediately on launch and keeps state across relaunches
 - ⚙️ **Configurable** — Work duration, short/long break, sessions before long break
-- 📊 **Break tracking** — Visual charts of tracked, missed, and paused breaks
+- 📊 **Break tracking** — Visual charts of tracked, missed, skipped, and paused breaks
 - 😴 **Sleep-safe timing** — Uses wall-clock time so sessions stay accurate across sleep/wake
 - 💾 **Persistent stats** — Break history saved locally as JSON
 

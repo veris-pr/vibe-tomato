@@ -3,6 +3,7 @@ import Foundation
 enum BreakOutcome: String, Codable, Sendable {
     case tracked  // user clicked the orange dot
     case missed   // break timer expired without acknowledgment
+    case skipped  // user explicitly skipped the break
     case paused   // user paused the timer during a break
 }
 
@@ -56,6 +57,7 @@ struct DayStat: Identifiable {
     let date: Date
     let tracked: Int
     let missed: Int
+    let skipped: Int
     let paused: Int
 }
 
@@ -92,6 +94,7 @@ final class SessionStore: ObservableObject {
             label: "Today", date: today,
             tracked: todayRecords.filter { $0.outcome == .tracked }.count,
             missed: todayRecords.filter { $0.outcome == .missed }.count,
+            skipped: todayRecords.filter { $0.outcome == .skipped }.count,
             paused: todayRecords.filter { $0.outcome == .paused }.count
         )]
     }
@@ -102,7 +105,7 @@ final class SessionStore: ObservableObject {
 
         return (0..<7).reversed().map { daysAgo in
             guard let date = calendar.date(byAdding: .day, value: -daysAgo, to: today) else {
-                return DayStat(label: "", date: today, tracked: 0, missed: 0, paused: 0)
+                return DayStat(label: "", date: today, tracked: 0, missed: 0, skipped: 0, paused: 0)
             }
             let dayRecords = records.filter { calendar.isDate($0.date, inSameDayAs: date) }
 
@@ -113,6 +116,7 @@ final class SessionStore: ObservableObject {
                 label: formatter.string(from: date), date: date,
                 tracked: dayRecords.filter { $0.outcome == .tracked }.count,
                 missed: dayRecords.filter { $0.outcome == .missed }.count,
+                skipped: dayRecords.filter { $0.outcome == .skipped }.count,
                 paused: dayRecords.filter { $0.outcome == .paused }.count
             )
         }
@@ -135,6 +139,7 @@ final class SessionStore: ObservableObject {
                 label: "W\(4 - weeksAgo)", date: weekStart,
                 tracked: weekRecords.filter { $0.outcome == .tracked }.count,
                 missed: weekRecords.filter { $0.outcome == .missed }.count,
+                skipped: weekRecords.filter { $0.outcome == .skipped }.count,
                 paused: weekRecords.filter { $0.outcome == .paused }.count
             )
         }
