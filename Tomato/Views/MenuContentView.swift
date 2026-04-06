@@ -112,17 +112,18 @@ private struct QuitButton: View {
 
     var body: some View {
         Button(action: { NSApplication.shared.terminate(nil) }) {
-            HStack(spacing: 4) {
+            Group {
                 if isHovered {
                     SplatTomatoIcon()
                         .stroke(style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
                         .foregroundStyle(.red)
-                        .frame(width: 14, height: 14)
+                        .frame(width: 18, height: 18)
+                } else {
+                    Text("Quit Tomato")
+                        .font(.system(size: 11))
+                        .foregroundStyle(.secondary)
                 }
-                Text("Quit Tomato")
             }
-            .font(.system(size: 11))
-            .foregroundStyle(isHovered ? .red : .secondary)
         }
         .buttonStyle(.plain)
         .onHover { hovering in
