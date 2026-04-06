@@ -1,3 +1,4 @@
+import AppKit
 import Foundation
 import SwiftUI
 
@@ -9,6 +10,19 @@ enum TimerState: String, Codable, Sendable {
 
 @MainActor
 final class PomodoroTimer: ObservableObject {
+    private enum Keys {
+        static let snapshot = "timerSnapshot"
+    }
+
+    private struct TimerSnapshot: Codable {
+        let state: TimerState
+        let remainingSeconds: Int
+        let completedWorkSessions: Int
+        let breakAcknowledged: Bool
+        let stateBeforePause: TimerState
+        let phaseEndDate: Date?
+    }
+
     @Published var state: TimerState = .working
     @Published var remainingSeconds: Int = 0
     @Published var completedWorkSessions: Int = 0
@@ -19,16 +33,23 @@ final class PomodoroTimer: ObservableObject {
     private var timer: Timer?
     private let settings: AppSettings
     private let sessionStore: SessionStore
+    private var phaseEndDate: Date?
+    private var wakeObserver: NSObjectProtocol?
+    private var activationObserver: NSObjectProtocol?
 
     /// Remembers what state we were in before pausing
     private var stateBeforePause: TimerState = .working
 
     var isLongBreak: Bool {
-        completedWorkSessions > 0 && completedWorkSessions % settings.sessionsBeforeLongBreak == 0
+        completedWorkSessions > 0 && completedWorkSessions % max(settings.sessionsBeforeLongBreak, 1) == 0
     }
 
     var currentBreakDuration: Int {
         isLongBreak ? settings.longBreakSeconds : settings.shortBreakSeconds
+    }
+
+    var isAwaitingBreakAcknowledgment: Bool {
+        state == .onBreak && !breakAcknowledged
     }
 
     var progress: Double {
@@ -62,21 +83,20 @@ final class PomodoroTimer: ObservableObject {
         case .onBreak:
             return .orange
         case .paused:
-            return .gray
+            return .secondary
         }
     }
 
     init(settings: AppSettings, sessionStore: SessionStore) {
         self.settings = settings
         self.sessionStore = sessionStore
-        // Always-on: start working immediately
-        remainingSeconds = settings.workSeconds
-        startCountdown()
+        restoreOrStart()
+        registerForLifecycleNotifications()
     }
 
     func pause() {
         guard state != .paused else { return }
-        // If pausing during a break, record it as a paused break
+        synchronizeToCurrentTime()
         if state == .onBreak && !breakAcknowledged {
             sessionStore.recordBreak(outcome: .paused, date: Date())
             breakAcknowledged = true
@@ -84,17 +104,20 @@ final class PomodoroTimer: ObservableObject {
         stateBeforePause = state
         timer?.invalidate()
         timer = nil
+        phaseEndDate = nil
         state = .paused
+        saveSnapshot()
     }
 
     func resume() {
         guard state == .paused else { return }
-        // Resume into a fresh work session (break was already recorded if applicable)
         if stateBeforePause == .onBreak {
             startWork()
         } else {
             state = stateBeforePause
+            phaseEndDate = Date().addingTimeInterval(TimeInterval(remainingSeconds))
             startCountdown()
+            saveSnapshot()
         }
     }
 
@@ -105,25 +128,22 @@ final class PomodoroTimer: ObservableObject {
         endBreak()
     }
 
-    func menuDidOpen() {
-        if state == .onBreak && !breakAcknowledged {
-            acknowledgeBreak()
-        }
-    }
-
     private func startWork() {
-        timer?.invalidate()
         state = .working
         remainingSeconds = settings.workSeconds
         breakAcknowledged = false
+        phaseEndDate = Date().addingTimeInterval(TimeInterval(settings.workSeconds))
         startCountdown()
+        saveSnapshot()
     }
 
     private func startBreak() {
         state = .onBreak
         remainingSeconds = currentBreakDuration
         breakAcknowledged = false
+        phaseEndDate = Date().addingTimeInterval(TimeInterval(currentBreakDuration))
         startCountdown()
+        saveSnapshot()
     }
 
     private func endBreak() {
@@ -139,27 +159,109 @@ final class PomodoroTimer: ObservableObject {
                 self?.tick()
             }
         }
+        timer?.tolerance = 0.2
     }
 
     private func tick() {
-        guard remainingSeconds > 0 else { return }
-        remainingSeconds -= 1
+        synchronizeToCurrentTime()
+    }
 
-        if remainingSeconds <= 0 {
-            timer?.invalidate()
-            timer = nil
+    private func restoreOrStart() {
+        guard
+            let data = UserDefaults.standard.data(forKey: Keys.snapshot),
+            let snapshot = try? JSONDecoder().decode(TimerSnapshot.self, from: data)
+        else {
+            startWork()
+            return
+        }
 
+        state = snapshot.state
+        remainingSeconds = max(snapshot.remainingSeconds, 0)
+        completedWorkSessions = max(snapshot.completedWorkSessions, 0)
+        breakAcknowledged = snapshot.breakAcknowledged
+        stateBeforePause = snapshot.stateBeforePause
+        phaseEndDate = snapshot.phaseEndDate
+
+        if state == .paused {
+            saveSnapshot()
+            return
+        }
+
+        guard phaseEndDate != nil else {
+            startWork()
+            return
+        }
+
+        synchronizeToCurrentTime()
+        startCountdown()
+    }
+
+    private func synchronizeToCurrentTime(now: Date = Date()) {
+        guard state != .paused else { return }
+        guard var currentEndDate = phaseEndDate else {
+            startWork()
+            return
+        }
+
+        while currentEndDate <= now {
             switch state {
             case .working:
                 completedWorkSessions += 1
-                startBreak()
+                state = .onBreak
+                breakAcknowledged = false
+                let breakDuration = currentBreakDuration
+                remainingSeconds = breakDuration
+                currentEndDate = currentEndDate.addingTimeInterval(TimeInterval(breakDuration))
             case .onBreak:
                 if !breakAcknowledged {
-                    sessionStore.recordBreak(outcome: .missed, date: Date())
+                    sessionStore.recordBreak(outcome: .missed, date: currentEndDate)
                 }
-                endBreak()
+                state = .working
+                breakAcknowledged = false
+                remainingSeconds = settings.workSeconds
+                currentEndDate = currentEndDate.addingTimeInterval(TimeInterval(settings.workSeconds))
             case .paused:
-                break
+                return
+            }
+        }
+
+        phaseEndDate = currentEndDate
+        remainingSeconds = max(Int(ceil(currentEndDate.timeIntervalSince(now))), 0)
+        saveSnapshot()
+    }
+
+    private func saveSnapshot() {
+        let snapshot = TimerSnapshot(
+            state: state,
+            remainingSeconds: remainingSeconds,
+            completedWorkSessions: completedWorkSessions,
+            breakAcknowledged: breakAcknowledged,
+            stateBeforePause: stateBeforePause,
+            phaseEndDate: phaseEndDate
+        )
+
+        guard let data = try? JSONEncoder().encode(snapshot) else { return }
+        UserDefaults.standard.set(data, forKey: Keys.snapshot)
+    }
+
+    private func registerForLifecycleNotifications() {
+        wakeObserver = NSWorkspace.shared.notificationCenter.addObserver(
+            forName: NSWorkspace.didWakeNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in
+                self?.synchronizeToCurrentTime()
+            }
+        }
+
+        activationObserver = NotificationCenter.default.addObserver(
+            forName: NSApplication.didBecomeActiveNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in
+                self?.synchronizeToCurrentTime()
             }
         }
     }

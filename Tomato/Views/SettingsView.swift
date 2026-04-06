@@ -11,22 +11,31 @@ struct SettingsView: View {
             VStack(alignment: .leading, spacing: 12) {
                 settingRow(
                     label: "Work Duration",
-                    value: $settings.workMinutes,
-                    range: 1...120,
+                    value: Binding(
+                        get: { settings.workMinutes },
+                        set: { settings.setWorkMinutes($0) }
+                    ),
+                    range: AppSettings.Limits.workMinutes,
                     unit: "min"
                 )
 
                 settingRow(
                     label: "Short Break",
-                    value: $settings.shortBreakMinutes,
-                    range: 1...30,
+                    value: Binding(
+                        get: { settings.shortBreakMinutes },
+                        set: { settings.setShortBreakMinutes($0) }
+                    ),
+                    range: AppSettings.Limits.shortBreakMinutes,
                     unit: "min"
                 )
 
                 settingRow(
                     label: "Long Break",
-                    value: $settings.longBreakMinutes,
-                    range: 1...60,
+                    value: Binding(
+                        get: { settings.longBreakMinutes },
+                        set: { settings.setLongBreakMinutes($0) }
+                    ),
+                    range: AppSettings.Limits.longBreakMinutes,
                     unit: "min"
                 )
 
@@ -34,8 +43,11 @@ struct SettingsView: View {
                     Text("Long break every")
                         .font(.system(size: 12))
                     Spacer()
-                    Picker("", selection: $settings.sessionsBeforeLongBreak) {
-                        ForEach(2...8, id: \.self) { n in
+                    Picker("", selection: Binding(
+                        get: { settings.sessionsBeforeLongBreak },
+                        set: { settings.setSessionsBeforeLongBreak($0) }
+                    )) {
+                        ForEach(AppSettings.Limits.sessionsBeforeLongBreak, id: \.self) { n in
                             Text("\(n) sessions").tag(n)
                         }
                     }

@@ -16,11 +16,6 @@ struct MenuContentView: View {
         }
         .padding(12)
         .frame(width: 320)
-        .task {
-            // Defer to avoid layout recursion in MenuBarExtra
-            try? await Task.sleep(for: .milliseconds(50))
-            timer.menuDidOpen()
-        }
     }
 
     // MARK: - Timer Section
@@ -68,7 +63,7 @@ struct MenuContentView: View {
         VStack(spacing: 12) {
             StatsChartView(title: "Today", stats: sessionStore.todayStats())
             StatsChartView(title: "This Week", stats: sessionStore.weekStats())
-            StatsChartView(title: "This Month", stats: sessionStore.monthStats())
+            StatsChartView(title: "Last 4 Weeks", stats: sessionStore.monthStats())
         }
     }
 
@@ -76,6 +71,16 @@ struct MenuContentView: View {
 
     private var controlsSection: some View {
         VStack(spacing: 6) {
+            Button(action: { timer.acknowledgeBreak() }) {
+                Text("Break Done")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.regular)
+            .disabled(!timer.isAwaitingBreakAcknowledgment)
+            .opacity(timer.isAwaitingBreakAcknowledgment ? 1 : 0)
+            .frame(height: 30)
+
             HStack(spacing: 8) {
                 Button(action: {
                     if timer.state == .paused { timer.resume() } else { timer.pause() }
