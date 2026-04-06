@@ -16,7 +16,9 @@ struct MenuContentView: View {
         }
         .padding(12)
         .frame(width: 320)
-        .onAppear {
+        .task {
+            // Defer to avoid layout recursion in MenuBarExtra
+            try? await Task.sleep(for: .milliseconds(50))
             timer.menuDidOpen()
         }
     }
@@ -75,21 +77,17 @@ struct MenuContentView: View {
     private var controlsSection: some View {
         VStack(spacing: 6) {
             HStack(spacing: 8) {
-                if timer.state == .paused {
-                    Button(action: { timer.resume() }) {
-                        Label("Resume", systemImage: "play.fill")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.regular)
-                } else {
-                    Button(action: { timer.pause() }) {
-                        Label("Pause", systemImage: "pause.fill")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.regular)
+                Button(action: {
+                    if timer.state == .paused { timer.resume() } else { timer.pause() }
+                }) {
+                    Label(
+                        timer.state == .paused ? "Resume" : "Pause",
+                        systemImage: timer.state == .paused ? "play.fill" : "pause.fill"
+                    )
+                    .frame(maxWidth: .infinity)
                 }
+                .buttonStyle(.bordered)
+                .controlSize(.regular)
 
                 Button(action: { showSettings.toggle() }) {
                     Label("Settings", systemImage: "gear")
@@ -112,18 +110,19 @@ private struct QuitButton: View {
 
     var body: some View {
         Button(action: { NSApplication.shared.terminate(nil) }) {
-            Group {
-                if isHovered {
-                    SplatTomatoIcon()
-                        .stroke(style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
-                        .foregroundStyle(.primary)
-                        .frame(width: 18, height: 18)
-                } else {
-                    Text("Quit Tomato")
-                        .font(.system(size: 11))
-                        .foregroundStyle(.secondary)
-                }
+            ZStack {
+                Text("Quit Tomato")
+                    .font(.system(size: 11))
+                    .foregroundStyle(.secondary)
+                    .opacity(isHovered ? 0 : 1)
+
+                SplatTomatoIcon()
+                    .stroke(style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
+                    .foregroundStyle(.primary)
+                    .frame(width: 18, height: 18)
+                    .opacity(isHovered ? 1 : 0)
             }
+            .frame(height: 18)
         }
         .buttonStyle(.plain)
         .onHover { hovering in

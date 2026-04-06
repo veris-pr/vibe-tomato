@@ -15,12 +15,20 @@ struct StatsChartView: View {
                 legendView
             }
 
-            if stats.isEmpty || stats.allSatisfy({ $0.tracked == 0 && $0.missed == 0 && $0.paused == 0 }) {
+            ZStack {
                 emptyState
-            } else {
-                chartView
+                    .opacity(hasData ? 0 : 1)
+
+                if hasData {
+                    chartView
+                }
             }
+            .frame(height: 60)
         }
+    }
+
+    private var hasData: Bool {
+        !stats.isEmpty && stats.contains { $0.tracked > 0 || $0.missed > 0 || $0.paused > 0 }
     }
 
     private var legendView: some View {
@@ -41,14 +49,10 @@ struct StatsChartView: View {
     }
 
     private var emptyState: some View {
-        HStack {
-            Spacer()
-            Text("No data yet")
-                .font(.system(size: 10))
-                .foregroundStyle(.quaternary)
-            Spacer()
-        }
-        .frame(height: 40)
+        Text("No data yet")
+            .font(.system(size: 10))
+            .foregroundStyle(.quaternary)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var chartView: some View {
@@ -93,6 +97,6 @@ struct StatsChartView: View {
             }
         }
         .chartLegend(.hidden)
-        .frame(height: 60)
+        .frame(maxHeight: .infinity)
     }
 }
