@@ -26,15 +26,15 @@ struct StatsChartView: View {
     private var legendView: some View {
         HStack(spacing: 8) {
             HStack(spacing: 3) {
-                Circle().fill(.green).frame(width: 6, height: 6)
+                Circle().fill(.primary).frame(width: 6, height: 6)
                 Text("Tracked").font(.system(size: 9)).foregroundStyle(.tertiary)
             }
             HStack(spacing: 3) {
-                Circle().fill(.red.opacity(0.7)).frame(width: 6, height: 6)
+                Circle().fill(.secondary.opacity(0.5)).frame(width: 6, height: 6)
                 Text("Missed").font(.system(size: 9)).foregroundStyle(.tertiary)
             }
             HStack(spacing: 3) {
-                Circle().fill(.gray).frame(width: 6, height: 6)
+                Circle().fill(.quaternary).frame(width: 6, height: 6)
                 Text("Paused").font(.system(size: 9)).foregroundStyle(.tertiary)
             }
         }
@@ -58,21 +58,21 @@ struct StatsChartView: View {
                     x: .value("Period", stat.label),
                     y: .value("Count", stat.tracked)
                 )
-                .foregroundStyle(.green)
+                .foregroundStyle(.primary.opacity(0.8))
                 .cornerRadius(2)
 
                 BarMark(
                     x: .value("Period", stat.label),
                     y: .value("Count", stat.missed)
                 )
-                .foregroundStyle(.red.opacity(0.7))
+                .foregroundStyle(.secondary.opacity(0.5))
                 .cornerRadius(2)
 
                 BarMark(
                     x: .value("Period", stat.label),
                     y: .value("Count", stat.paused)
                 )
-                .foregroundStyle(.gray)
+                .foregroundStyle(.quaternary)
                 .cornerRadius(2)
             }
         }

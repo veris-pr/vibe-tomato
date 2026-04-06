@@ -56,7 +56,7 @@ struct MenuContentView: View {
         switch timer.state {
         case .working: return .primary
         case .onBreak: return .orange
-        case .paused: return .gray
+        case .paused: return .secondary
         }
     }
 
@@ -116,7 +116,7 @@ private struct QuitButton: View {
                 if isHovered {
                     SplatTomatoIcon()
                         .stroke(style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
-                        .foregroundStyle(.red)
+                        .foregroundStyle(.primary)
                         .frame(width: 18, height: 18)
                 } else {
                     Text("Quit Tomato")

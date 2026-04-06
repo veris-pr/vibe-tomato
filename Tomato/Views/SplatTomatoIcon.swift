@@ -2,65 +2,57 @@ import SwiftUI
 
 struct SplatTomatoIcon: Shape {
     func path(in rect: CGRect) -> Path {
-        let sx = rect.width / 64
-        let sy = rect.height / 64
+        let sx = rect.width / 128
+        let sy = rect.height / 128
 
         var path = Path()
 
-        // Core splat
-        path.move(to: CGPoint(x: 32 * sx, y: 32 * sy))
+        // Core splat body
+        path.move(to: CGPoint(x: 50 * sx, y: 90 * sy))
         path.addCurve(
-            to: CGPoint(x: 18 * sx, y: 36 * sy),
-            control1: CGPoint(x: 20 * sx, y: 20 * sy),
-            control2: CGPoint(x: 12 * sx, y: 28 * sy)
+            to: CGPoint(x: 35 * sx, y: 95 * sy),
+            control1: CGPoint(x: 40 * sx, y: 80 * sy),
+            control2: CGPoint(x: 30 * sx, y: 85 * sy)
         )
         path.addCurve(
-            to: CGPoint(x: 28 * sx, y: 44 * sy),
-            control1: CGPoint(x: 10 * sx, y: 40 * sy),
-            control2: CGPoint(x: 18 * sx, y: 50 * sy)
+            to: CGPoint(x: 45 * sx, y: 100 * sy),
+            control1: CGPoint(x: 25 * sx, y: 92 * sy),
+            control2: CGPoint(x: 28 * sx, y: 105 * sy)
         )
         path.addCurve(
-            to: CGPoint(x: 42 * sx, y: 42 * sy),
-            control1: CGPoint(x: 32 * sx, y: 54 * sy),
-            control2: CGPoint(x: 44 * sx, y: 52 * sy)
+            to: CGPoint(x: 68 * sx, y: 100 * sy),
+            control1: CGPoint(x: 50 * sx, y: 115 * sy),
+            control2: CGPoint(x: 70 * sx, y: 112 * sy)
         )
         path.addCurve(
-            to: CGPoint(x: 46 * sx, y: 30 * sy),
-            control1: CGPoint(x: 54 * sx, y: 44 * sy),
-            control2: CGPoint(x: 56 * sx, y: 34 * sy)
+            to: CGPoint(x: 80 * sx, y: 92 * sy),
+            control1: CGPoint(x: 85 * sx, y: 105 * sy),
+            control2: CGPoint(x: 95 * sx, y: 95 * sy)
         )
         path.addCurve(
-            to: CGPoint(x: 36 * sx, y: 26 * sy),
-            control1: CGPoint(x: 52 * sx, y: 20 * sy),
-            control2: CGPoint(x: 40 * sx, y: 18 * sy)
+            to: CGPoint(x: 65 * sx, y: 85 * sy),
+            control1: CGPoint(x: 90 * sx, y: 80 * sy),
+            control2: CGPoint(x: 75 * sx, y: 75 * sy)
         )
         path.addCurve(
-            to: CGPoint(x: 32 * sx, y: 32 * sy),
-            control1: CGPoint(x: 32 * sx, y: 18 * sy),
-            control2: CGPoint(x: 26 * sx, y: 20 * sy)
+            to: CGPoint(x: 50 * sx, y: 90 * sy),
+            control1: CGPoint(x: 60 * sx, y: 70 * sy),
+            control2: CGPoint(x: 50 * sx, y: 75 * sy)
         )
         path.closeSubpath()
 
         // Splashes
-        path.move(to: CGPoint(x: 10 * sx, y: 30 * sy))
-        path.addLine(to: CGPoint(x: 6 * sx, y: 28 * sy))
+        path.move(to: CGPoint(x: 30 * sx, y: 80 * sy))
+        path.addLine(to: CGPoint(x: 20 * sx, y: 70 * sy))
 
-        path.move(to: CGPoint(x: 52 * sx, y: 28 * sy))
-        path.addLine(to: CGPoint(x: 58 * sx, y: 26 * sy))
+        path.move(to: CGPoint(x: 95 * sx, y: 80 * sy))
+        path.addLine(to: CGPoint(x: 110 * sx, y: 70 * sy))
 
-        path.move(to: CGPoint(x: 18 * sx, y: 54 * sy))
-        path.addLine(to: CGPoint(x: 14 * sx, y: 58 * sy))
+        path.move(to: CGPoint(x: 55 * sx, y: 110 * sy))
+        path.addLine(to: CGPoint(x: 50 * sx, y: 120 * sy))
 
-        path.move(to: CGPoint(x: 46 * sx, y: 50 * sy))
-        path.addLine(to: CGPoint(x: 50 * sx, y: 56 * sy))
-
-        // Detached leaf
-        path.move(to: CGPoint(x: 28 * sx, y: 10 * sy))
-        path.addCurve(
-            to: CGPoint(x: 38 * sx, y: 10 * sy),
-            control1: CGPoint(x: 30 * sx, y: 6 * sy),
-            control2: CGPoint(x: 36 * sx, y: 6 * sy)
-        )
+        path.move(to: CGPoint(x: 80 * sx, y: 110 * sy))
+        path.addLine(to: CGPoint(x: 90 * sx, y: 120 * sy))
 
         return path
     }
