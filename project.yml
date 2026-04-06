@@ -1,0 +1,38 @@
+name: Tomato
+options:
+  bundleIdPrefix: com.tomato
+  deploymentTarget:
+    macOS: "14.0"
+  minimumXcodeGenVersion: "2.38"
+  xcodeVersion: "16.0"
+  createIntermediateGroups: true
+  generateEmptyDirectories: true
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+
+targets:
+  Tomato:
+    type: application
+    platform: macOS
+    sources:
+      - path: Tomato
+        excludes:
+          - "*.entitlements"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.tomato.app
+        PRODUCT_NAME: Tomato
+        INFOPLIST_FILE: Tomato/Info.plist
+        CODE_SIGN_ENTITLEMENTS: Tomato/Tomato.entitlements
+        MARKETING_VERSION: "1.0.0"
+        CURRENT_PROJECT_VERSION: "1"
+        GENERATE_INFOPLIST_FILE: false
+        COMBINE_HIDPI_IMAGES: true
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        CODE_SIGN_IDENTITY: "-"
+        SWIFT_STRICT_CONCURRENCY: complete
+    entitlements:
+      path: Tomato/Tomato.entitlements
