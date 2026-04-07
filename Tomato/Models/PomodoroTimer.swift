@@ -136,21 +136,17 @@ final class PomodoroTimer: ObservableObject {
     }
 
     func completeBreakAndReset() {
-        guard state == .onBreak, !breakAcknowledged else {
-            resetToWorkTimer()
-            return
+        if state == .onBreak {
+            breakAcknowledged = true
         }
-        breakAcknowledged = true
         sessionStore.recordBreak(outcome: .tracked, date: Date())
         resetToWorkTimer()
     }
 
     func skipBreakAndReset() {
-        guard state == .onBreak, !breakAcknowledged else {
-            resetToWorkTimer()
-            return
+        if state == .onBreak {
+            breakAcknowledged = true
         }
-        breakAcknowledged = true
         sessionStore.recordBreak(outcome: .skipped, date: Date())
         resetToWorkTimer()
     }
