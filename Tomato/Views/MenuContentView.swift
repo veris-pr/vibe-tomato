@@ -100,7 +100,6 @@ struct MenuContentView: View {
                 .controlSize(.regular)
             }
             .disabled(!timer.isAwaitingBreakAcknowledgment)
-            .opacity(timer.isAwaitingBreakAcknowledgment ? 1 : 0)
             .frame(height: 30)
 
             HStack(spacing: 8) {
@@ -119,7 +118,6 @@ struct MenuContentView: View {
                 .controlSize(.regular)
             }
             .disabled(!timer.isAwaitingBreakAcknowledgment)
-            .opacity(timer.isAwaitingBreakAcknowledgment ? 1 : 0)
             .frame(height: 30)
 
             HStack(spacing: 8) {
