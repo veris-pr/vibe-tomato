@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 struct MenuContentView: View {
@@ -23,9 +24,16 @@ struct MenuContentView: View {
     private var timerSection: some View {
         VStack(spacing: 8) {
             HStack {
-                Text(stateLabel)
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(.secondary)
+                HStack(spacing: 6) {
+                    Image(nsImage: NSApplication.shared.applicationIconImage)
+                        .resizable()
+                        .frame(width: 12, height: 12)
+                        .clipShape(RoundedRectangle(cornerRadius: 3))
+
+                    Text(stateLabel)
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(.secondary)
+                }
                 Spacer()
                 HStack(spacing: 8) {
                     Text("Session \(timer.completedWorkSessions + (timer.state == .working ? 1 : 0))")
