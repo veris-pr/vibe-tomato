@@ -44,9 +44,8 @@ struct MenuContentView: View {
                     .accessibilityLabel("Settings")
 
                     Button(action: { NSApplication.shared.terminate(nil) }) {
-                        SplatTomatoIcon()
-                            .stroke(style: StrokeStyle(lineWidth: 1, lineCap: .round, lineJoin: .round))
-                            .frame(width: 12, height: 12)
+                        Image(systemName: "xmark.circle")
+                            .font(.system(size: 11, weight: .medium))
                             .foregroundStyle(.tertiary)
                     }
                     .buttonStyle(.plain)
