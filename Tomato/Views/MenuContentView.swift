@@ -131,6 +131,13 @@ struct MenuContentView: View {
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.regular)
+
+                Button(action: { timer.resetToWorkTimer() }) {
+                    Text("Reset")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.regular)
             }
 
             QuitButton()
