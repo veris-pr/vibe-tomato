@@ -14,7 +14,7 @@ Tomato sits quietly in your menu bar as a small dot:
 - **🟠 Orange dot** — Time to take a break!
 - **● Gray dot** — Timer is paused
 
-When the orange dot appears, open the menu and click `Break Done` to acknowledge your break or `Skip` to dismiss it. If the break timer expires first, it's recorded as a missed break. If you pause during a break, that is tracked as a separate paused outcome. Your tracked, missed, skipped, and paused breaks are visualized in the menu.
+When the orange dot appears, open the menu and click `Break Done` to acknowledge your break or `Skip` to dismiss it. You can also use `Done + Reset` or `Skip + Reset` to record the break and immediately restart the work timer. If the break timer expires first, it's recorded as a missed break. If you pause during a break, that is tracked as a separate paused outcome. Your tracked, missed, skipped, and paused breaks are visualized in the menu.
 
 **No notifications. No pop-ups. Just a dot.**
 
@@ -56,7 +56,7 @@ The built app will be in `DerivedData/`. You can also just open `Tomato.xcodepro
 
 ## Configuration
 
-Click the gear icon in the dropdown menu to configure:
+Click the gear icon at the top-right of the dropdown menu to configure:
 
 | Setting | Default | Description |
 |---------|---------|-------------|

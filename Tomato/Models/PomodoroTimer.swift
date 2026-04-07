@@ -135,6 +135,32 @@ final class PomodoroTimer: ObservableObject {
         endBreak()
     }
 
+    func completeBreakAndReset() {
+        guard state == .onBreak, !breakAcknowledged else {
+            resetToWorkTimer()
+            return
+        }
+        breakAcknowledged = true
+        sessionStore.recordBreak(outcome: .tracked, date: Date())
+        resetToWorkTimer()
+    }
+
+    func skipBreakAndReset() {
+        guard state == .onBreak, !breakAcknowledged else {
+            resetToWorkTimer()
+            return
+        }
+        breakAcknowledged = true
+        sessionStore.recordBreak(outcome: .skipped, date: Date())
+        resetToWorkTimer()
+    }
+
+    func resetToWorkTimer() {
+        timer?.invalidate()
+        timer = nil
+        startWork()
+    }
+
     private func startWork() {
         state = .working
         remainingSeconds = settings.workSeconds

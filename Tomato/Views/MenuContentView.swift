@@ -27,9 +27,22 @@ struct MenuContentView: View {
                     .font(.system(size: 11, weight: .medium))
                     .foregroundStyle(.secondary)
                 Spacer()
-                Text("Session \(timer.completedWorkSessions + (timer.state == .working ? 1 : 0))")
-                    .font(.system(size: 10))
-                    .foregroundStyle(.tertiary)
+                HStack(spacing: 8) {
+                    Text("Session \(timer.completedWorkSessions + (timer.state == .working ? 1 : 0))")
+                        .font(.system(size: 10))
+                        .foregroundStyle(.tertiary)
+
+                    Button(action: { showSettings.toggle() }) {
+                        Image(systemName: "gearshape")
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundStyle(.tertiary)
+                    }
+                    .buttonStyle(.plain)
+                    .popover(isPresented: $showSettings, arrowEdge: .top) {
+                        SettingsView(settings: settings)
+                    }
+                    .accessibilityLabel("Settings")
+                }
             }
 
             Text(timer.formattedTime)
@@ -91,6 +104,25 @@ struct MenuContentView: View {
             .frame(height: 30)
 
             HStack(spacing: 8) {
+                Button(action: { timer.completeBreakAndReset() }) {
+                    Text("Done + Reset")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.regular)
+
+                Button(action: { timer.skipBreakAndReset() }) {
+                    Text("Skip + Reset")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.regular)
+            }
+            .disabled(!timer.isAwaitingBreakAcknowledgment)
+            .opacity(timer.isAwaitingBreakAcknowledgment ? 1 : 0)
+            .frame(height: 30)
+
+            HStack(spacing: 8) {
                 Button(action: {
                     if timer.state == .paused { timer.resume() } else { timer.pause() }
                 }) {
@@ -102,15 +134,6 @@ struct MenuContentView: View {
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.regular)
-
-                Button(action: { showSettings.toggle() }) {
-                    Label("Settings", systemImage: "gear")
-                }
-                .buttonStyle(.bordered)
-                .controlSize(.regular)
-                .popover(isPresented: $showSettings, arrowEdge: .trailing) {
-                    SettingsView(settings: settings)
-                }
             }
 
             QuitButton()
