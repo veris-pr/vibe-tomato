@@ -99,7 +99,6 @@ struct MenuContentView: View {
                 .buttonStyle(.bordered)
                 .controlSize(.regular)
             }
-            .disabled(!timer.isAwaitingBreakAcknowledgment)
             .frame(height: 30)
 
             HStack(spacing: 8) {
