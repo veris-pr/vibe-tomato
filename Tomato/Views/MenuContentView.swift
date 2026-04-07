@@ -158,7 +158,7 @@ private struct QuitButton: View {
                     .opacity(isHovered ? 0 : 1)
 
                 SplatTomatoIcon()
-                    .stroke(style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
+                    .stroke(style: StrokeStyle(lineWidth: 1, lineCap: .round, lineJoin: .round))
                     .foregroundStyle(.primary)
                     .frame(width: 18, height: 18)
                     .opacity(isHovered ? 1 : 0)
