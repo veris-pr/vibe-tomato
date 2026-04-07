@@ -42,6 +42,15 @@ struct MenuContentView: View {
                         SettingsView(settings: settings)
                     }
                     .accessibilityLabel("Settings")
+
+                    Button(action: { NSApplication.shared.terminate(nil) }) {
+                        SplatTomatoIcon()
+                            .stroke(style: StrokeStyle(lineWidth: 1, lineCap: .round, lineJoin: .round))
+                            .frame(width: 12, height: 12)
+                            .foregroundStyle(.tertiary)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Quit Tomato")
                 }
             }
 
@@ -138,37 +147,6 @@ struct MenuContentView: View {
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.regular)
-            }
-
-            QuitButton()
-                .padding(.top, 4)
-        }
-    }
-}
-
-private struct QuitButton: View {
-    @State private var isHovered = false
-
-    var body: some View {
-        Button(action: { NSApplication.shared.terminate(nil) }) {
-            ZStack {
-                Text("Quit Tomato")
-                    .font(.system(size: 11))
-                    .foregroundStyle(.secondary)
-                    .opacity(isHovered ? 0 : 1)
-
-                SplatTomatoIcon()
-                    .stroke(style: StrokeStyle(lineWidth: 1, lineCap: .round, lineJoin: .round))
-                    .foregroundStyle(.primary)
-                    .frame(width: 18, height: 18)
-                    .opacity(isHovered ? 1 : 0)
-            }
-            .frame(height: 18)
-        }
-        .buttonStyle(.plain)
-        .onHover { hovering in
-            withAnimation(.easeInOut(duration: 0.15)) {
-                isHovered = hovering
             }
         }
     }
